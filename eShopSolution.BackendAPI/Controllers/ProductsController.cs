@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using eShopSolution.Application.Catalog.Products;
+﻿using eShopSolution.Application.Catalog.Products;
 using eShopSolution.ViewModels.Catalog.ProductImages;
 using eShopSolution.ViewModels.Catalog.Products;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace eShopSolution.BackendAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IPublicProductService _publicProductService;
 
         private readonly IManageProductService _manageProductService;
-        public ProductsController(IPublicProductService publicProductService, 
+        public ProductsController(IPublicProductService publicProductService,
             IManageProductService manageProductService)
         {
             _publicProductService = publicProductService;
@@ -53,12 +51,13 @@ namespace eShopSolution.BackendAPI.Controllers
                 return BadRequest(ModelState);
             }
             var productId = await _manageProductService.Create(request);
-            if(productId == 0){
+            if (productId == 0)
+            {
                 return BadRequest();
             }
             var product = await _manageProductService.GetById(productId, request.LanguageId);
 
-            return CreatedAtAction(nameof(GetById), new {  id = productId}, product);
+            return CreatedAtAction(nameof(GetById), new { id = productId }, product);
         }
 
         [HttpPut]
