@@ -13,5 +13,5 @@
 - Swashbuckle.AspNetCore
 - Microsoft.AspNetCore.Authentication.JwtBearer
 - FluentValidation.AspNetCore
-
+- Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
 
