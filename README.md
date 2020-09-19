@@ -11,5 +11,7 @@
 - Microsoft.Extensions.Configuration.Json
 - Microsoft.AspNetCore.Http.Features
 - Swashbuckle.AspNetCore
+- Microsoft.AspNetCore.Authentication.JwtBearer
+- FluentValidation.AspNetCore
 
 
