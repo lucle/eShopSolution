@@ -2,23 +2,17 @@
 @model PagedResult<eShopSolution.ViewModels.System.Users.UserViewModel>
 
 @{
-    ViewData["Title"] = "View";
+    ViewData["Title"] = "Danh sách người dùng";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>View</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <!-- Page Heading -->
-<h1 class="h3 mb-2 text-gray-800">Tables</h1>
-<p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the <a target="_blank" href="https://datatables.net">official DataTables documentation</a>.</p>
+<h1 class="h3 mb-2 text-gray-800">Danh sách người dùng</h1>
 
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
     <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+        <a class="btn btn-success" asp-action="Create" asp-controller="User">Tạo mới</a>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -26,7 +20,7 @@
                 <thead>
                     <tr>
                         <th>
-                            Id
+                            STT
                         </th>
                         <th>
                             Tên
@@ -47,11 +41,15 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @{ 
+                        var i = 0;
+                    }
                     @foreach (var item in Model.Items)
                     {
+                        i += 1;
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Id)
+                                @i
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.FirstName)
