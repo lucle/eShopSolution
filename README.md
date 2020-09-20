@@ -14,4 +14,8 @@
 - Microsoft.AspNetCore.Authentication.JwtBearer
 - FluentValidation.AspNetCore
 - Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
-
+- Microsoft.AspNetCore.Session
+- System.IdentityModel.Tokens.Jwt
+- Newtonsoft.Json
+- Microsoft.IdentityModel.Tokens
+- Microsoft.IdentityModel.Logging
