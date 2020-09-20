@@ -3,6 +3,7 @@ using eShopSolution.ViewModels.System.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace eShopSolution.BackendAPI.Controllers
@@ -27,9 +28,9 @@ namespace eShopSolution.BackendAPI.Controllers
                 return BadRequest(ModelState);
             }
             var resultToken = await _userService.Authenticate(request);
-            if (string.IsNullOrEmpty(resultToken))
+            if (string.IsNullOrEmpty(resultToken.ResultObj))
             {
-                return BadRequest("UserName or Password is incorrect");
+                return BadRequest(resultToken);
             }
 
             return Ok(resultToken);
@@ -44,12 +45,29 @@ namespace eShopSolution.BackendAPI.Controllers
                 return BadRequest(ModelState);
             }
             var result = await _userService.Register(request);
-            if (!result)
+            if (!result.IsSuccessed)
             {
-                return BadRequest("Register is unsuccessful.");
+                return BadRequest(result);
             }
 
-            return Ok();
+            return Ok(result);
+        }
+
+        //https://localhost/api/users/id
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UserUpdateRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _userService.Update(id, request);
+            if (!result.IsSuccessed)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
         }
 
         //https://localhost/api/users/paging?pageIndex=1&pageSize=10&keyword=
@@ -58,6 +76,15 @@ namespace eShopSolution.BackendAPI.Controllers
         {
             var users = await _userService.GetUserPaging(request);
             return Ok(users);
+        }
+
+
+        //https://localhost/api/users/getuserbyid/1
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(Guid id)
+        {
+            var user = await _userService.GetUserById(id);
+            return Ok(user);
         }
 
     }
