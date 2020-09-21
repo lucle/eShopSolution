@@ -76,64 +76,7 @@ namespace eShopSolution.Application.System.Users
                 return new ApiSuccessResult<bool>();
             }
             return new ApiErrorResult<bool>("Xoá không thành công");
-        }
-
-        public async Task<ApiResult<UserViewModel>> GetUserById(Guid id)
-        {
-            var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user == null)
-            {
-                return new ApiErrorResult<UserViewModel>("User không tồn tại");
-            }
-            var userVm = new UserViewModel()
-            {
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                FirstName = user.FirstName,
-                DOB = user.DOB,
-                Id = user.Id,
-                LastName = user.LastName,
-                UserName = user.UserName
-            };
-            return new ApiSuccessResult<UserViewModel>(userVm);
-        }
-
-        public async Task<ApiResult<PagedResult<UserViewModel>>> GetUserPaging(GetUserPagingRequest request)
-        {
-            var query = _userManager.Users;
-            if (!string.IsNullOrEmpty(request.Keyword))
-            {
-                query = query.Where(x => x.UserName.Contains(request.Keyword) 
-                || x.PhoneNumber.Contains(request.Keyword) 
-                || x.FirstName.Contains(request.Keyword) 
-                || x.LastName.Contains(request.Keyword));
-            }
-
-            //3.Paging
-            int totalRow = await query.CountAsync();
-
-            var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .Select(x => new UserViewModel()
-                {
-                    Id = x.Id,
-                    Email = x.Email,
-                    PhoneNumber = x.PhoneNumber,
-                    UserName = x.UserName,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                }).ToListAsync();
-
-            //4. Select and projection
-            var pageResult = new PagedResult<UserViewModel>()
-            {
-                TotalRecords = totalRow,
-                PageIndex = request.PageIndex,
-                PageSize = request.PageSize,
-                Items = data
-            };
-            return new ApiSuccessResult<PagedResult<UserViewModel>>(pageResult);
-        }
+        }   
 
         public async Task<ApiResult<bool>> Register(RegisterRequest request)
         {
@@ -184,6 +127,96 @@ namespace eShopSolution.Application.System.Users
                 return new ApiSuccessResult<bool>();
             }
             return new ApiErrorResult<bool>("Cập nhật không thành công");
+        }
+
+        public async Task<ApiResult<bool>> RoleAssign(Guid id, RoleAssignRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+
+                return new ApiErrorResult<bool>("Tài khoản đã tồn tại");
+            }
+
+            var removedRoles = request.Roles.Where(x => x.Selected == false).Select(x => x.Name).ToList();
+            foreach (var roleName in removedRoles)
+            {
+                if (await _userManager.IsInRoleAsync(user, roleName) == true)
+                {
+                    await _userManager.RemoveFromRoleAsync(user, roleName);
+                }
+            }
+            
+
+            var addedRoles = request.Roles.Where(x => x.Selected == true).Select(x => x.Name).ToList();
+            
+            foreach (var roleName in addedRoles)
+            {
+                if(await _userManager.IsInRoleAsync(user, roleName) == false)
+                {
+                    await _userManager.AddToRoleAsync(user, roleName);
+                }
+            }
+            return new ApiSuccessResult<bool>();
+        }
+
+        public async Task<ApiResult<UserViewModel>> GetUserById(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return new ApiErrorResult<UserViewModel>("User không tồn tại");
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            var userVm = new UserViewModel()
+            {
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                FirstName = user.FirstName,
+                DOB = user.DOB,
+                Id = user.Id,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                Roles = roles
+            };
+            return new ApiSuccessResult<UserViewModel>(userVm);
+        }
+
+        public async Task<ApiResult<PagedResult<UserViewModel>>> GetUserPaging(GetUserPagingRequest request)
+        {
+            var query = _userManager.Users;
+            if (!string.IsNullOrEmpty(request.Keyword))
+            {
+                query = query.Where(x => x.UserName.Contains(request.Keyword)
+                || x.PhoneNumber.Contains(request.Keyword)
+                || x.FirstName.Contains(request.Keyword)
+                || x.LastName.Contains(request.Keyword));
+            }
+
+            //3.Paging
+            int totalRow = await query.CountAsync();
+
+            var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .Select(x => new UserViewModel()
+                {
+                    Id = x.Id,
+                    Email = x.Email,
+                    PhoneNumber = x.PhoneNumber,
+                    UserName = x.UserName,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                }).ToListAsync();
+
+            //4. Select and projection
+            var pageResult = new PagedResult<UserViewModel>()
+            {
+                TotalRecords = totalRow,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
+                Items = data
+            };
+            return new ApiSuccessResult<PagedResult<UserViewModel>>(pageResult);
         }
     }
 }
