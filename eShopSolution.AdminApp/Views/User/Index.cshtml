@@ -5,7 +5,14 @@
     ViewData["Title"] = "Danh sách người dùng";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@section Scripts{
+    <script>
+        setTimeout(function () {
+            $('#msgAlert').fadeOut('slow');
+        }, 2000);
 
+    </script>
+}
 <!-- Page Heading -->
 <h1 class="h3 mb-2 text-gray-800">Danh sách người dùng</h1>
 
@@ -24,14 +31,20 @@
                         </div>
                         <div class="col-md-3">
                             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Tìm kiếm</button>
-                            <button class="btn btn-outline-dark my-2 my-sm-0" type="button" onclick="window.location.href='/User/Index'">Xoá</button>
+                            <button class="btn btn-outline-dark my-2 my-sm-0" type="button" onclick="window.location.href='/User/Index'">Reset</button>
                         </div>
-                    </div>                                     
+                    </div>
                 </form>
             </div>
         </div>
     </div>
     <div class="card-body">
+        @if (ViewBag.SuccessMsg != null)
+        {
+            <div id="msgAlert" class="alert alert-success col-md-6 col-xs-12" role="alert">
+                @ViewBag.SuccessMsg
+            </div>
+        }
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
@@ -58,7 +71,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @{ 
+                    @{
                         var i = 0;
                     }
                     @foreach (var item in Model.Items)
@@ -84,9 +97,9 @@
                                 @Html.DisplayFor(modelItem => item.Email)
                             </td>
                             <td>
-                                @Html.ActionLink("Edit", "Edit", new {  id=item.Id  }) |
-                                @Html.ActionLink("Details", "Details", new {  id=item.Id  }) |
-                                @Html.ActionLink("Delete", "Delete", new {  id=item.Id})
+                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
                             </td>
                         </tr>
                     }
