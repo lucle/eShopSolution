@@ -48,7 +48,8 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Trang quản trị của eShop</h1>
                                     </div>
-                                    <form asp-action="Login" asp-controller="Login" method="post" class="user">
+                                    <form asp-action="Index" asp-controller="Login" method="post">
+                                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                         <div class="form-group">
                                             <input type="text" class="form-control form-control-user" asp-for="UserName" aria-describedby="emailHelp" placeholder="Tài khoản">
                                         </div>

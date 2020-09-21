@@ -33,13 +33,13 @@ namespace eShopSolution.Application.System.Users
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user == null)
             {
-                return null;
+                return new ApiErrorResult<string>("Tài khoản không tồn tại.");
             }
 
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, request.RememberMe, true);
             if (!result.Succeeded)
             {
-                return null;
+                return new ApiErrorResult<string>("Tài khoản hoặc mật khẩu không chính xác."); ;
             }
             var roles = _userManager.GetRolesAsync(user);
             var claims = new[]
@@ -103,7 +103,10 @@ namespace eShopSolution.Application.System.Users
             var query = _userManager.Users;
             if (!string.IsNullOrEmpty(request.Keyword))
             {
-                query = query.Where(x => x.UserName.Contains(request.Keyword) || x.PhoneNumber.Contains(request.Keyword));
+                query = query.Where(x => x.UserName.Contains(request.Keyword) 
+                || x.PhoneNumber.Contains(request.Keyword) 
+                || x.FirstName.Contains(request.Keyword) 
+                || x.LastName.Contains(request.Keyword));
             }
 
             //3.Paging
