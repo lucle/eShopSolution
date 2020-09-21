@@ -20,7 +20,7 @@ namespace eShopSolution.AdminApp.Controllers
             _configuration = configuration;
         }
 
-        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 1)
         {
             var request = new GetUserPagingRequest()
             {
@@ -100,6 +100,13 @@ namespace eShopSolution.AdminApp.Controllers
 
             ModelState.AddModelError("", result.Message);
             return View(request);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var result = await _userApiClient.GetUserById(id);
+            return View(result.ResultObj);
         }
     }
 }
