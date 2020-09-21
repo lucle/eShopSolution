@@ -20,7 +20,7 @@ namespace eShopSolution.AdminApp.Controllers
             _configuration = configuration;
         }
 
-        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 1)
+        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 10)
         {
             var request = new GetUserPagingRequest()
             {
@@ -77,12 +77,12 @@ namespace eShopSolution.AdminApp.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     PhoneNumber = user.PhoneNumber,
-                    Id=id
+                    Id = id
                 };
                 return View(updateRequest);
             }
-            return RedirectToAction("Error","Home");
-            
+            return RedirectToAction("Error", "Home");
+
         }
 
         [HttpPost]
@@ -107,6 +107,32 @@ namespace eShopSolution.AdminApp.Controllers
         {
             var result = await _userApiClient.GetUserById(id);
             return View(result.ResultObj);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(Guid id)
+        {
+            return View(new DeleteUserRequest()
+            {
+                Id = id
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(DeleteUserRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            var result = await _userApiClient.DeleteUser(request.Id);
+            if (result.IsSuccessed)
+            {
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError("", result.Message);
+            return View(request);
         }
     }
 }
